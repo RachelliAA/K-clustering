@@ -33,7 +33,7 @@ def convert_categorical_to_numeric(df):
 
 
 # # Load the dataset
-df = pd.read_csv('heart.csv')
+df = pd.read_csv('liver.csv')
 
 # # Convert categorical columns
 df_numeric, encoders = convert_categorical_to_numeric(df)
@@ -42,7 +42,8 @@ print(df_numeric.head())
 
 df= df_numeric.copy()
 # Load your dataset
-#df = pd.read_csv('heart.csv')  # Replace with your actual dataset path
+#df = pd.read_csv('heart.csv') 
+df = pd.read_csv('liver.csv')
 
 # Assume last column is label (if unsupervised, you can ignore it)
 X = df.iloc[:, :-1].values
