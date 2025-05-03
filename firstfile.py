@@ -31,36 +31,37 @@ def convert_categorical_to_numeric(df):
     return df, label_encoders
 
 
+if(__name__ == "__main__"):
+    # Load the dataset
+    df = pd.read_csv('heart.csv')
 
-# # Load the dataset
-df = pd.read_csv('liver.csv')
+    #Convert categorical columns
+    df_numeric, encoders = convert_categorical_to_numeric(df)
 
-# # Convert categorical columns
-df_numeric, encoders = convert_categorical_to_numeric(df)
+    print(df_numeric.head())
+    #df_numeric.to_csv('heart_numeric.csv', index=False)# Save the converted DataFrame to a new CSV file
 
-print(df_numeric.head())
+    df= df_numeric.copy()
+    # Load your dataset
+    df = pd.read_csv('heart_numeric.csv') 
+    #df = pd.read_csv('liver.csv')
 
-df= df_numeric.copy()
-# Load your dataset
-#df = pd.read_csv('heart.csv') 
-df = pd.read_csv('liver.csv')
+    # Assume last column is label (if unsupervised, you can ignore it)
+    X = df.iloc[:, :-1].values
 
-# Assume last column is label (if unsupervised, you can ignore it)
-X = df.iloc[:, :-1].values
+    # Standardize the data
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
-# Standardize the data
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+    # Reduce to 2D using PCA
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(X_scaled)
 
-# Reduce to 2D using PCA
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(X_scaled)
-
-# Plot the data
-plt.figure(figsize=(8, 6))
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c='gray', alpha=0.7)
-plt.title('PCA Projection (2D)')
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-plt.grid(True)
-plt.show()
+    # Plot the data
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X_pca[:, 0], X_pca[:, 1], c='gray', alpha=0.7)
+    plt.title('PCA Projection (2D)')
+    plt.xlabel('PC1')
+    plt.ylabel('PC2')
+    plt.grid(True)
+    plt.show()
