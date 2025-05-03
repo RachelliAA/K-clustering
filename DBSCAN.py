@@ -14,7 +14,7 @@ from scipy.stats import mode
 
 
 # 1. Load the heart dataset
-df = pd.read_csv("heart.csv")  # Ensure 'selector' is the ground-truth label
+df = pd.read_csv("heart_numeric.csv")  # Ensure 'selector' is the ground-truth label
 
 # 2. Separate features and labels
 X = df.drop(columns=['target'])  # Features
@@ -25,7 +25,8 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # 4. Apply DBSCAN
-dbscan = DBSCAN(eps=1.1, min_samples=1)
+# dbscan = DBSCAN(eps=1.1, min_samples=1) # for liver 67.54%
+dbscan = DBSCAN(eps=5, min_samples=3) # for heart 72.52%
 y_pred = dbscan.fit_predict(X_scaled)
 
 # 5. Filter out noise (-1 label)
@@ -48,73 +49,8 @@ mapped_preds = np.array([labels_map[cluster] for cluster in y_pred_filtered])
 accuracy = accuracy_score(y_true_filtered, mapped_preds)
 print(f"Classification Accuracy (DBSCAN): {accuracy:.4f}")
 
+
 # ================================================
-
-# import pandas as pd
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.cluster import DBSCAN
-# from sklearn.metrics import accuracy_score
-# from scipy.stats import mode
-# from sklearn.decomposition import PCA
-# import matplotlib.pyplot as plt
-# import numpy as np
-
-# # Load dataset
-# df = pd.read_csv("liver.csv")
-
-# # Split features and labels
-# X = df.drop(columns=['selector'])
-# y_true = df['selector']
-
-# # Standardize
-# scaler = StandardScaler()
-# X_scaled = scaler.fit_transform(X)
-
-# # Optional: reduce dimensionality to denoise data (can help DBSCAN)
-# pca = PCA(n_components=6)
-# X_pca = pca.fit_transform(X_scaled)
-
-# # Tuning DBSCAN: try a few values
-# best_accuracy = 0
-# best_eps = None
-# best_min_samples = None
-# best_pred = None
-
-# for eps in [1.5, 2, 2.5, 3, 3.5, 4]:
-#     for min_samples in [3, 5, 10]:
-#         dbscan = DBSCAN(eps=eps, min_samples=min_samples)
-#         y_pred = dbscan.fit_predict(X_pca)
-
-#         # Filter noise
-#         mask = y_pred != -1
-#         if np.sum(mask) == 0:
-#             continue
-
-#         y_pred_filtered = y_pred[mask]
-#         y_true_filtered = y_true[mask].to_numpy()
-
-#         # Map cluster labels
-#         labels_map = {}
-#         for cluster in np.unique(y_pred_filtered):
-#             mask_cluster = y_pred_filtered == cluster
-#             true_labels = y_true_filtered[mask_cluster]
-#             if len(true_labels) == 0:
-#                 continue
-#             most_common = mode(true_labels, keepdims=True)[0][0]
-#             labels_map[cluster] = most_common
-
-#         mapped_preds = np.array([labels_map[cluster] for cluster in y_pred_filtered])
-#         accuracy = accuracy_score(y_true_filtered, mapped_preds)
-
-#         if accuracy > best_accuracy:
-#             best_accuracy = accuracy
-#             best_eps = eps
-#             best_min_samples = min_samples
-#             best_pred = y_pred
-
-# print(f"Best DBSCAN Accuracy: {best_accuracy:.4f} with eps={best_eps}, min_samples={best_min_samples}")
-
-# ====================================================
 # import pandas as pd
 # import numpy as np
 # from sklearn.preprocessing import StandardScaler
@@ -122,8 +58,8 @@ print(f"Classification Accuracy (DBSCAN): {accuracy:.4f}")
 # import matplotlib.pyplot as plt
 
 # # 1. Load dataset
-# df = pd.read_csv("liver.csv")
-# X = df.drop(columns=['selector'])  # Adjust column name if needed
+# df = pd.read_csv("heart_numeric.csv")
+# X = df.drop(columns=['target'])  # Adjust column name if needed
 
 # # 2. Standardize
 # scaler = StandardScaler()
