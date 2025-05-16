@@ -151,7 +151,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 # Load dataset
-df = pd.read_csv("liver.csv")
+df = pd.read_csv("heart_processed_data.csv")
 
 # Only use relevant features (13 features)
 X = df.drop(columns=["target"])
