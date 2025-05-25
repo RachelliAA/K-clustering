@@ -1,4 +1,5 @@
-age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,ca,target,thal_1,thal_2,thal_fixed,thal_normal,thal_reversible
+age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,
+ca,target,thal_1,thal_2,thal_fixed,thal_normal,thal_reversible
 63,1,1,145,233,1,2,150,0,2.3,3,0,0,False,False,True,False,False
 67,1,4,160,286,0,2,108,1,1.5,2,3,1,False,False,False,True,False
 67,1,4,120,229,0,2,129,1,2.6,2,2,0,False,False,False,False,True

@@ -162,7 +162,7 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Run KMeans with 2 clusters (as per paper)
-kmeans = KMeans(n_clusters=2, random_state=0)
+kmeans = KMeans(n_clusters=2, random_state=42)
 y_kmeans = kmeans.fit_predict(X_scaled)
 
 # Raw accuracy (just to observe, doesn't mean much here)
