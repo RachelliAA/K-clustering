@@ -213,3 +213,51 @@ ggplot(df, aes(x = df[,1], y = df[,2], color = cluster)) +
   geom_point(size = 2) +
   labs(title = "K-Means Clusters (First 2 Features)") +
   theme_minimal()
+##################################################################################3
+library(kohonen)
+
+# ---- STEP 2: Load and Clean Data ----
+data <- read.csv("C:/Users/rache/Desktop/seminar/Kclustering/heart_processed_data.csv")
+
+# Convert 'True'/'False' to numeric 1/0
+data$thal_fixed <- as.numeric(data$thal_fixed == "True")
+data$thal_normal <- as.numeric(data$thal_normal == "True")
+data$thal_reversible <- as.numeric(data$thal_reversible == "True")
+
+# Separate target
+target <- data$target
+features <- data[, !colnames(data) %in% c("target")]
+
+# ---- STEP 3: Normalize Features ----
+scaled_features <- scale(features)
+
+# ---- STEP 4: Train SOM ----
+set.seed(123)
+som_grid <- somgrid(xdim = 6, ydim = 6, topo = "hexagonal")  # 6x6 grid = 36 nodes
+som_model <- som(as.matrix(scaled_features), grid = som_grid, rlen = 100)
+
+# ---- STEP 5: Estimate k from SOM ----
+# Number of unique BMUs = estimated k
+bmu <- som_model$unit.classif
+estimated_k <- length(unique(bmu))
+
+cat("Estimated number of clusters from SOM (k):", estimated_k, "\n")
+
+# ---- STEP 6: Run K-Means Using Estimated k ----
+set.seed(123)
+kmeans_result <- kmeans(scaled_features, centers = estimated_k, nstart = 10)
+
+# ---- STEP 7: Evaluate Weighted Accuracy ----
+evaluate_accuracy <- function(clusters, true_labels) {
+  sum(sapply(unique(clusters), function(cl) {
+    idx <- which(clusters == cl)
+    majority <- names(which.max(table(true_labels[idx])))
+    sum(true_labels[idx] == majority)
+  })) / length(true_labels)
+}
+
+accuracy <- evaluate_accuracy(kmeans_result$cluster, target)
+cat("Weighted Classification Accuracy:", round(accuracy * 100, 2), "%\n")
+# Estimated number of clusters from SOM (k): 33 
+# Weighted Classification Accuracy: 84.72 %
+> 
