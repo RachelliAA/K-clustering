@@ -36,13 +36,13 @@
 library(kohonen)
 
 # ---- STEP 2: Load and Prepare Data ----
- data <- read.csv("C:/Users/rache/Desktop/seminar/Kclustering/liver.csv")
+data <- read.csv("C:/Users/rache/Desktop/seminar/Kclustering/liver.csv")
 
 # Create binary label from 'drinks' (used only for evaluation)
-data$drinks_label <- ifelse(data$drinks > 2, 1, 0)
+#data$drinks_label <- ifelse(data$drinks > 2, 1, 0)
 
 # Select only features (exclude drinks, selector, drinks_label)
-features <- data[, c("mcv", "alkphos", "sgpt", "sgot", "gammagt")]
+features <- data[, c("mcv","alkphos","sgpt","sgot","gammagt","drinks")]
 
 # Scale features
 scaled_features <- scale(features)

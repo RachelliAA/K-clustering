@@ -53,7 +53,7 @@
 library(kohonen)
 
 #--------- 2. Load the Data
-liver_data <- read.csv("C:/Users/rache/Desktop/liver.csv")
+liver_data <- read.csv("C:/Users/rache/Desktop/seminar/Kclustering/liver.csv")
 
 #--------- 3. Data Preprocessing (exclude selector)
 numeric_data <- liver_data[sapply(liver_data, is.numeric) & names(liver_data) != "selector"]
@@ -62,7 +62,7 @@ numeric_data <- liver_data[sapply(liver_data, is.numeric) & names(liver_data) !=
 som_grid <- somgrid(xdim = 6, ydim = 6, topo = "hexagonal")
 
 set.seed(123)
-som_model <- som(as.matrix(numeric_data), grid = som_grid, rlen = 100)
+som_model <- som(as.matrix(numeric_data), grid = som_grid, rlen = 2000)
 
 #--------- 5. Define jet color palette
 jet.colors <- colorRampPalette(c("blue", "cyan", "green", "yellow", "red"))
