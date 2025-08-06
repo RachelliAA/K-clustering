@@ -11,7 +11,7 @@ threshold <- 1
 
 # 1 = heavy drinker, 0 = not heavy
 #if drinks is bigger than 2 then put 1 else put 0
-df$target <- ifelse(df$drinks > threshold, 1, 0)
+df$target <- ifelse(df$drinks >= threshold, 1, 0)
 
 # Remove drinks and selector columns
 df <- subset(df, select = -c(drinks, selector))
