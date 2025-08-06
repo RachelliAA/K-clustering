@@ -1,7 +1,0 @@
-dbscan
-liver- 67.54%
-Heart- 72.52%
-
-kmeans-
-liver 0.57,
-heart 0.72
