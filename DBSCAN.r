@@ -7,13 +7,13 @@ library(modeest)      # For computing the most frequent value (mode)
 library(e1071)        # For computing classification accuracy
 
 # # 2. Load the liver dataset
-# df <- read_csv("liver.csv")   # Uncomment this line to use liver dataset
+df <- read_csv("liver_cleaned.csv")   # Uncomment this line to use liver dataset
 # # 3. Separate features and labels
 # X <- df %>% select(-selector)    # Features (excluding the label column)
 # y_true <- df$selector            # Ground truth labels
 
 # 2. Load the heart dataset
-df <- read_csv("heart_processed_data.csv")  # Use the heart dataset
+# df <- read_csv("heart_processed_data.csv")  # Use the heart dataset
 # 3. Separate features and labels
 
 X <- df %>% select(-target)    # Features (excluding the label column)
@@ -24,8 +24,8 @@ preproc <- preProcess(X, method = c("center", "scale"))
 X_scaled <- predict(preproc, X)
 
 # 5. Apply DBSCAN
-# db <- dbscan(X_scaled, eps = 1.1, minPts = 1)  # For liver dataset
-db <- dbscan(X_scaled, eps = 3, minPts = 1)      # For heart dataset
+db <- dbscan(X_scaled, eps = 2.1, minPts = 10)  # For liver dataset
+# db <- dbscan(X_scaled, eps = 3, minPts = 1)      # For heart dataset
 
 y_pred <- db$cluster   # Cluster labels assigned by DBSCAN
 

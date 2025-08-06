@@ -12,12 +12,15 @@ library(grid)
 
 
 # 1. Load and preprocess the dataset
-df <- read_csv("liver.csv")
-# Use only the 5 blood tests as features
-X <- df %>% select(mcv, alkphos, sgpt, sgot, gammagt) %>% as.matrix() 
-# Create binary classification target from 'drinks'
-y_raw <- df$drinks
-y <- ifelse(y_raw >= 1, 1, 0)
+df <- read_csv("liver_cleaned.csv")
+X <- df %>% select(-target) %>% as.matrix()
+y <- df$target
+
+# # Use only the 5 blood tests as features
+# X <- df %>% select(mcv, alkphos, sgpt, sgot, gammagt) %>% as.matrix() 
+# # Create binary classification target from 'drinks'
+# y_raw <- df$drinks
+# y <- ifelse(y_raw >= 1, 1, 0)
 
 
 # df <- read_csv("heart_processed_data.csv")
