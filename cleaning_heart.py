@@ -1,4 +1,4 @@
-# #preprocessing heart.csv
+# #preprocessing heart.csv one hot encoding
 # import pandas as pd
 
 # # Load original CSV
@@ -11,6 +11,8 @@
 # df_encoded.to_csv('heart_processed_data2.csv', index=False)
 
 
+
+# this also takes out the 2 rows with 1 0r 2 in thal
 import pandas as pd
 
 # Load original CSV
