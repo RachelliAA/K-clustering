@@ -16,6 +16,11 @@ df$target <- ifelse(df$drinks >= threshold, 1, 0)
 # Remove drinks and selector columns
 df <- subset(df, select = -c(drinks, selector))
 
+head(df)
+# Reorder columns with sgot before sgpt
+df <- df[, c("mcv", "alkphos", "sgot", "sgpt", "gammagt", "target")]
+head(df)
+
 # Shuffle the dataset
 set.seed(123)             # Optional: for reproducibility
 df <- df[sample(nrow(df)), ]
