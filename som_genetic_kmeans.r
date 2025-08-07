@@ -12,7 +12,7 @@ library(gridExtra)
 library(grid)
 
 # 1. Load and preprocess the dataset
-df <- read_csv("liver_cleaned.csv")
+df <- read_csv("C:/Users/rache/Desktop/seminar/Kclustering/liver_cleaned.csv")
 # df <- read_csv("heart_cleaned.csv")
 
 X <- df %>% select(-target) %>% as.matrix()
@@ -247,3 +247,64 @@ dev.off()
 # --------------------- Fig 4,5 -------------------------
 
 
+# ----------- FINAL VISUALIZATION: PCA with Cluster and Sickness --------------
+
+# Combine data into a single dataframe
+combined_df <- df %>%
+  mutate(
+    Cluster = as.factor(data_clusters),
+    Target = as.factor(target)  # assuming 1 = sick, 0 = not sick
+  )
+
+# Run PCA on scaled features
+pca_result <- prcomp(X_scaled, center = TRUE, scale. = TRUE)
+pca_df <- as.data.frame(pca_result$x[, 1:2])  # take PC1 and PC2
+pca_df$Cluster <- combined_df$Cluster
+pca_df$Target <- combined_df$Target
+
+# Plot PCA: Clustered data and sickness status
+library(ggplot2)
+ggplot(pca_df, aes(x = PC1, y = PC2, color = Cluster, shape = Target)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal(base_size = 14) +
+  scale_shape_manual(values = c("0" = 16, "1" = 17)) +  # circle vs triangle
+  labs(
+    title = "PCA: Clusters and True Health Status",
+    x = "PC1",
+    y = "PC2",
+    shape = "Sick (1 = yes)"
+  )
+
+# Save PCA plot
+ggsave("pca_clusters_sickness.pdf", width = 8, height = 6)
+
+# ----------- EXPORT: Save cluster assignments + sickness status to file -----------
+
+# Export table: Cluster and Target for each person
+export_df <- df %>%
+  mutate(
+    Cluster = data_clusters,
+    Sick = target  # or rename to "Label" if you prefer
+  )
+
+# Write to CSV
+write.csv(export_df, "cluster_assignments_with_labels.csv", row.names = FALSE)
+
+cat("✅ Exported: cluster_assignments_with_labels.csv\n")
+
+
+# Summary of sickness rate in each cluster
+cluster_summary <- df %>%
+  mutate(
+    Cluster = data_clusters,
+    Sick = target
+  ) %>%
+  group_by(Cluster) %>%
+  summarise(
+    Total = n(),
+    Sick_Count = sum(Sick == 1),
+    Sick_Percent = round(100 * Sick_Count / Total, 2)
+  ) %>%
+  arrange(desc(Sick_Percent))  # Optional: show highest % first
+
+print(cluster_summary)
