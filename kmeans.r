@@ -49,18 +49,18 @@ cat("k = ",k ," Weighted Classification Accuracy:", round(accuracy * 100, 2), "%
 
 ###############################   liver dataset  ###################################################
 # ---- STEP 1: Load the data ----
-data <- read.csv("C:/Users/rache/Desktop/seminar/Kclustering/liver.csv")
+data <- read.csv("C:/Users/rache/Desktop/seminar/Kclustering/liver_cleaned.csv")
 
 # ---- STEP 2: Extract target and features ----
-target <- data$selector  # Used only for evaluation
-features <- data[, !colnames(data) %in% c("selector")]
+target <- data$target  # Used only for evaluation
+features <- data[, !colnames(data) %in% c("target")]
 
 # ---- STEP 2: Scale numeric features ----
 scaled_features <- scale(features)
 
 # ---- STEP 2: Run K-Means ----
 set.seed(123)
-k <- 50
+k <- 60
 kmeans_result <- kmeans(scaled_features, centers = k)
 
 # ---- STEP 2: Evaluate Clustering Accuracy ----
