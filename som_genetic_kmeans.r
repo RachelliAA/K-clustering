@@ -12,8 +12,8 @@ library(gridExtra)
 library(grid)
 
 # 1. Load and preprocess the dataset
-df <- read_csv("liver_cleaned.csv")
-# df <- read_csv("heart_cleaned.csv")
+# df <- read_csv("liver_cleaned.csv")
+df <- read_csv("heart_cleaned.csv")
 
 X <- df %>% select(-target) %>% as.matrix()
 y <- df$target
@@ -127,123 +127,123 @@ accuracy <- weighted_accuracy(kmeans_result$cluster, y)
 cat(sprintf("Weighted Classification Accuracy: %.4f\n", accuracy))
 
 
-# ========= FIG 3: Function (dynamic colors & k) =========
-plot_fig3 <- function(som_model, X_scaled, kmeans_result, title = "Clusters / Segments") {
+# # ========= FIG 3: Function (dynamic colors & k) =========
+# plot_fig3 <- function(som_model, X_scaled, kmeans_result, title = "Clusters / Segments") {
 
-  coords <- som_model$grid$pts
-  unit_classif <- kohonen::map(som_model, newdata = X_scaled)$unit.classif
+#   coords <- som_model$grid$pts
+#   unit_classif <- kohonen::map(som_model, newdata = X_scaled)$unit.classif
 
-  # Assign clusters to SOM nodes via majority vote
-  node_cluster <- sapply(1:nrow(coords), function(i) {
-    inds <- which(unit_classif == i)
-    if (length(inds) > 0) {
-      clust <- kmeans_result$cluster[inds]
-      as.integer(names(sort(table(clust), decreasing = TRUE))[1])
-    } else {
-      NA
-    }
-  })
+#   # Assign clusters to SOM nodes via majority vote
+#   node_cluster <- sapply(1:nrow(coords), function(i) {
+#     inds <- which(unit_classif == i)
+#     if (length(inds) > 0) {
+#       clust <- kmeans_result$cluster[inds]
+#       as.integer(names(sort(table(clust), decreasing = TRUE))[1])
+#     } else {
+#       NA
+#     }
+#   })
 
-  df_plot <- data.frame(
-    x = coords[, 1],
-    y = -coords[, 2],  # flip Y-axis
-    cluster = factor(node_cluster)
-  )
+#   df_plot <- data.frame(
+#     x = coords[, 1],
+#     y = -coords[, 2],  # flip Y-axis
+#     cluster = factor(node_cluster)
+#   )
 
-  # Define simple base colors
-base_colors <- c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c", "#984ea3",  "yellow", 
-                   "pink", "gray", "cyan", "darkgreen", "darkblue", "gold", "magenta", "darkred")
-
-
-  # Map as many colors as needed
-  unique_clusters <- sort(unique(na.omit(as.integer(levels(df_plot$cluster)))))
-  n_clusters <- length(unique_clusters)
-  color_map <- setNames(base_colors[1:n_clusters], as.character(unique_clusters))
-
-  # Add radius = 0.5 so diameter = 1 unit (touching)
-  df_plot$radius <- 0.5
-
-  p <- ggplot(df_plot) +
-    ggforce::geom_circle(aes(x0 = x, y0 = y, r = radius, fill = cluster), 
-                         color = "black", size = 0.8) +
-    scale_fill_manual(values = color_map, na.value = "white") +
-    coord_fixed(ratio = 1, expand = FALSE) +
-    ggtitle(title) +
-    theme_void() +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-      legend.position = "none",
-      plot.background = element_rect(fill = "white", color = NA),
-      panel.background = element_rect(fill = "white", color = NA)
-    )
-
-  return(p)
-}
+#   # Define simple base colors
+# base_colors <- c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c", "#984ea3",  "yellow", 
+#                    "pink", "gray", "cyan", "darkgreen", "darkblue", "gold", "magenta", "darkred")
 
 
-# Show it in RStudio
-print(plot_fig3(som_model, X_scaled, kmeans_result))
+#   # Map as many colors as needed
+#   unique_clusters <- sort(unique(na.omit(as.integer(levels(df_plot$cluster)))))
+#   n_clusters <- length(unique_clusters)
+#   color_map <- setNames(base_colors[1:n_clusters], as.character(unique_clusters))
+
+#   # Add radius = 0.5 so diameter = 1 unit (touching)
+#   df_plot$radius <- 0.5
+
+#   p <- ggplot(df_plot) +
+#     ggforce::geom_circle(aes(x0 = x, y0 = y, r = radius, fill = cluster), 
+#                          color = "black", size = 0.8) +
+#     scale_fill_manual(values = color_map, na.value = "white") +
+#     coord_fixed(ratio = 1, expand = FALSE) +
+#     ggtitle(title) +
+#     theme_void() +
+#     theme(
+#       plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+#       legend.position = "none",
+#       plot.background = element_rect(fill = "white", color = NA),
+#       panel.background = element_rect(fill = "white", color = NA)
+#     )
+
+#   return(p)
+# }
 
 
-# ==== Save directly to file ====
-ggsave("FIG3_SOM_Clusters.pdf", plot = plot_fig3(som_model, X_scaled, kmeans_result), width = 6, height = 6)
-
-# ========= FIG 3: Visualize SOM with clusters from KMeans =========
+# # Show it in RStudio
+# print(plot_fig3(som_model, X_scaled, kmeans_result))
 
 
-# --------------------- Fig 4,5 -------------------------
+# # ==== Save directly to file ====
+# ggsave("FIG3_SOM_Clusters.pdf", plot = plot_fig3(som_model, X_scaled, kmeans_result), width = 6, height = 6)
 
-# Reuse the GA + KMeans results
-data_clusters <- kmeans_result$cluster  
+# # ========= FIG 3: Visualize SOM with clusters from KMeans =========
 
-# Combine numeric data with cluster assignments
-numeric_data <- as.data.frame(X)  # original numeric features (unscaled)
-colnames(numeric_data) <- colnames(X)
-numeric_data$Cluster <- as.factor(data_clusters)
 
-# Define feature order
-feature_order <- c("mcv", "sgpt", "gammagt", "alkphos", "sgot")
+# # --------------------- Fig 4,5 -------------------------
 
-# Function to plot density plots for one cluster
-plot_cluster_features <- function(df, target_cluster) {
-  df <- df %>%
-    mutate(group = ifelse(Cluster == target_cluster, "cluster", "population"))
+# # Reuse the GA + KMeans results
+# data_clusters <- kmeans_result$cluster  
+
+# # Combine numeric data with cluster assignments
+# numeric_data <- as.data.frame(X)  # original numeric features (unscaled)
+# colnames(numeric_data) <- colnames(X)
+# numeric_data$Cluster <- as.factor(data_clusters)
+
+# # Define feature order
+# feature_order <- c("mcv", "sgpt", "gammagt", "alkphos", "sgot")
+
+# # Function to plot density plots for one cluster
+# plot_cluster_features <- function(df, target_cluster) {
+#   df <- df %>%
+#     mutate(group = ifelse(Cluster == target_cluster, "cluster", "population"))
   
-  df_long <- df %>%
-    select(all_of(feature_order), group) %>%
-    pivot_longer(cols = -group, names_to = "feature", values_to = "value")
+#   df_long <- df %>%
+#     select(all_of(feature_order), group) %>%
+#     pivot_longer(cols = -group, names_to = "feature", values_to = "value")
   
-  df_long$feature <- factor(df_long$feature, levels = feature_order)  # keep order
+#   df_long$feature <- factor(df_long$feature, levels = feature_order)  # keep order
   
-  p <- ggplot(df_long, aes(x = value, fill = group)) +
-    geom_density(alpha = 0.7) +
-    facet_wrap(~ feature, scales = "free", ncol = 3) +  # first row will have mcv, sgpt, gammagt
-    scale_fill_manual(values = c("cluster" = "#ecc4c2", "population" = "#a0dadb")) +
-    theme_minimal(base_size = 14) +
-    theme(
-      strip.text = element_text(face = "bold", size = 13),
-      legend.position = "right",
-      plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-      panel.background = element_rect(fill = "#e5e5e5", color = NA),
-      panel.grid.major = element_line(color = "white"),
-      panel.grid.minor = element_blank()
-    ) +
-    labs(
-      fill = "Group",
-      title = paste("Density plot of Cluster", target_cluster)
-    )
-  return(p)
-}
+#   p <- ggplot(df_long, aes(x = value, fill = group)) +
+#     geom_density(alpha = 0.7) +
+#     facet_wrap(~ feature, scales = "free", ncol = 3) +  # first row will have mcv, sgpt, gammagt
+#     scale_fill_manual(values = c("cluster" = "#ecc4c2", "population" = "#a0dadb")) +
+#     theme_minimal(base_size = 14) +
+#     theme(
+#       strip.text = element_text(face = "bold", size = 13),
+#       legend.position = "right",
+#       plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+#       panel.background = element_rect(fill = "#e5e5e5", color = NA),
+#       panel.grid.major = element_line(color = "white"),
+#       panel.grid.minor = element_blank()
+#     ) +
+#     labs(
+#       fill = "Group",
+#       title = paste("Density plot of Cluster", target_cluster)
+#     )
+#   return(p)
+# }
 
-# Save all cluster density plots into a single PDF
-pdf("cluster_density_plots.pdf", width = 10, height = 8)
+# # Save all cluster density plots into a single PDF
+# pdf("cluster_density_plots.pdf", width = 10, height = 8)
 
-for (cl in sort(unique(numeric_data$Cluster))) {
-  print(plot_cluster_features(numeric_data, target_cluster = cl))
-}
+# for (cl in sort(unique(numeric_data$Cluster))) {
+#   print(plot_cluster_features(numeric_data, target_cluster = cl))
+# }
 
-dev.off()
+# dev.off()
 
-# --------------------- Fig 4,5 -------------------------
+# # --------------------- Fig 4,5 -------------------------
 
 
